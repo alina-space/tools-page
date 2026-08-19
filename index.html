@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Домашние заботы Женьки и Алинки</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #2b2428;
+      --muted: #786b70;
+      --cream: #fff9ed;
+      --pink: #ffd6e8;
+      --rose: #f7b6c8;
+      --yellow: #ffe47c;
+      --mint: #bfe0aa;
+      --blue: #bae5f4;
+      --lavender: #e2d2fe;
+      --coral: #ffb3b8;
+      --line: rgba(86, 65, 73, 0.13);
+      --shadow: 0 24px 60px rgba(101, 72, 83, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Montserrat", Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 14% 8%, rgba(255, 228, 124, 0.9) 0 120px, transparent 121px),
+        radial-gradient(circle at 84% 12%, rgba(186, 229, 244, 0.85) 0 150px, transparent 151px),
+        radial-gradient(circle at 18% 82%, rgba(226, 210, 254, 0.9) 0 160px, transparent 161px),
+        linear-gradient(135deg, #f4d7df 0%, #f7eef2 42%, #eaf2ff 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 30px 24px;
+    }
+
+    .phone-shell {
+      position: relative;
+      overflow: hidden;
+      min-height: calc(100vh - 60px);
+      padding: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 34px;
+      background:
+        linear-gradient(115deg, rgba(255, 249, 237, 0.92), rgba(255, 255, 255, 0.76)),
+        linear-gradient(180deg, rgba(255, 214, 232, 0.35), rgba(186, 229, 244, 0.28));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .phone-shell::before,
+    .phone-shell::after {
+      position: absolute;
+      z-index: 0;
+      content: "";
+      border-radius: 999px;
+      opacity: 0.86;
+      pointer-events: none;
+    }
+
+    .phone-shell::before {
+      width: 220px;
+      height: 220px;
+      right: -78px;
+      top: -82px;
+      background: var(--pink);
+    }
+
+    .phone-shell::after {
+      width: 190px;
+      height: 190px;
+      left: -72px;
+      bottom: -76px;
+      background: var(--mint);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      max-width: 620px;
+      font-size: 46px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 620px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.82);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.62);
+      color: #7d5666;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .label-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--coral);
+      box-shadow: 14px 0 0 var(--yellow), 28px 0 0 var(--blue);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .panel,
+    .stat,
+    .task {
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      border-radius: 22px;
+      box-shadow: 0 12px 28px rgba(85, 66, 73, 0.08);
+    }
+
+    .stat {
+      min-height: 112px;
+      padding: 16px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .stat:nth-child(1) {
+      background: linear-gradient(135deg, #fff7d4, #fff);
+    }
+
+    .stat:nth-child(2) {
+      background: linear-gradient(135deg, #ffdce8, #fff);
+    }
+
+    .stat:nth-child(3) {
+      background: linear-gradient(135deg, #dff4ea, #fff);
+    }
+
+    .stat:nth-child(4) {
+      background: linear-gradient(135deg, #e7dcff, #fff);
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 10px;
+      color: var(--ink);
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .panel {
+      padding: 16px;
+      margin-bottom: 18px;
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr auto;
+      gap: 10px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #d16492;
+      box-shadow: 0 0 0 4px rgba(247, 182, 200, 0.32);
+    }
+
+    button {
+      min-height: 42px;
+      padding: 10px 15px;
+      border: 0;
+      border-radius: 999px;
+      background: #111;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .form button {
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
+    }
+
+    button:hover {
+      filter: brightness(0.96);
+    }
+
+    .secondary {
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--ink);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+    }
+
+    .danger {
+      background: #9a7a84;
+      color: #fff;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .filters button.active {
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
+    }
+
+    .tasks {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .task:nth-child(5n + 1) {
+      background: linear-gradient(135deg, #fff, #fff1bd);
+    }
+
+    .task:nth-child(5n + 2) {
+      background: linear-gradient(135deg, #fff, #f8d2fe);
+    }
+
+    .task:nth-child(5n + 3) {
+      background: linear-gradient(135deg, #fff, #d7f5f3);
+    }
+
+    .task:nth-child(5n + 4) {
+      background: linear-gradient(135deg, #fff, #ffd7dc);
+    }
+
+    .task:nth-child(5n + 5) {
+      background: linear-gradient(135deg, #fff, #dce7ff);
+    }
+
+    .task.done {
+      opacity: 0.56;
+    }
+
+    .task.done .task-title {
+      text-decoration: line-through;
+    }
+
+    .task input[type="checkbox"] {
+      width: 20px;
+      min-height: 20px;
+      accent-color: #111;
+    }
+
+    .task-title {
+      margin-bottom: 7px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      font-size: 13px;
+      color: #55504a;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.54);
+    }
+
+    .late {
+      background: #ffd7dc;
+      color: #991b1b;
+    }
+
+    .today {
+      background: #ffe47c;
+      color: #92400e;
+    }
+
+    .important {
+      background: #bae5f4;
+      color: #1d4ed8;
+    }
+
+    .urgent {
+      background: #ffb3b8;
+      color: #be123c;
+    }
+
+    .empty {
+      padding: 34px 20px;
+      border: 1px dashed rgba(86, 65, 73, 0.24);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #77716a;
+      text-align: center;
+    }
+
+    @media (max-width: 880px) {
+      .topbar {
+        flex-direction: column;
+      }
+
+      .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form {
+        grid-template-columns: 1fr;
+      }
+
+      .task {
+        grid-template-columns: auto 1fr;
+      }
+
+      .task .danger {
+        grid-column: 2;
+        width: fit-content;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app {
+        padding: 16px;
+      }
+
+      .phone-shell {
+        min-height: calc(100vh - 32px);
+        padding: 18px;
+        border-radius: 28px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="phone-shell">
+      <div class="content">
+        <header class="topbar">
+          <div>
+            <h1>Домашние заботы Женьки и Алинки</h1>
+            <div class="subtitle">Мини-приложение для планирования домашних забот: покупки, дела по дому и тд</div>
+          </div>
+          <button class="secondary" type="button" onclick="clearDone()">Убрать выполненные</button>
+        </header>
+
+        <section class="summary" aria-label="Сводка">
+          <div class="stat">Всего открыто<strong id="total">0</strong></div>
+          <div class="stat">Алинкины задачи<strong id="mine">0</strong></div>
+          <div class="stat">Женькины задачи<strong id="zhenya">0</strong></div>
+          <div class="stat">Просрочено<strong id="overdue">0</strong></div>
+        </section>
+
+        <section class="panel">
+          <form class="form" id="task-form">
+            <input id="title" placeholder="Задача" required />
+            <select id="type" aria-label="Действие" required>
+              <option value="" disabled selected>Действие</option>
+              <option>Сделать</option>
+              <option>Купить</option>
+              <option>Починить</option>
+              <option>Убрать</option>
+              <option>Оплатить</option>
+            </select>
+            <select id="owner" aria-label="Исполнитель">
+              <option>Я</option>
+              <option>Женя</option>
+              <option>Вместе</option>
+            </select>
+            <select id="priority" aria-label="Приорите">
+              <option>Обычный</option>
+              <option>Важно</option>
+              <option>Срочно</option>
+            </select>
+            <input id="deadline" type="date" aria-label="Дедлайн" />
+            <button type="submit">Добавить</button>
+          </form>
+        </section>
+
+        <nav class="filters" aria-label="Фильтры">
+          <button class="secondary active" type="button" onclick="setFilter('all', this)">Все</button>
+          <button class="secondary" type="button" onclick="setFilter('Я', this)">Алинки</button>
+          <button class="secondary" type="button" onclick="setFilter('Женя', this)">Жени</button>
+          <button class="secondary" type="button" onclick="setFilter('Купить', this)">Покупки</button>
+          <button class="secondary" type="button" onclick="setFilter('Починить', this)">Починки</button>
+          <button class="secondary" type="button" onclick="setFilter('late', this)">Просроченные</button>
+        </nav>
+
+        <section class="tasks" id="tasks" aria-live="polite"></section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://fybmpngnclewhwakxost.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_3TDXmNDlxEW-r2n0-pjarQ_mT-2c--B";
+    const HOUSEHOLD_ID = "zhenya-alina-home";
+    const TASKS_ENDPOINT = `${SUPABASE_URL}/rest/v1/tasks`;
+
+    let tasks = JSON.parse(localStorage.getItem("homeTasks") || "[]");
+    let filter = "all";
+
+    const form = document.getElementById("task-form");
+    const tasksElement = document.getElementById("tasks");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      if (!title) return;
+
+      const newTask = {
+        household_id: HOUSEHOLD_ID,
+        title,
+        type: document.getElementById("type").value,
+        owner: document.getElementById("owner").value,
+        priority: document.getElementById("priority").value,
+        deadline: document.getElementById("deadline").value || null,
+        done: false
+      };
+
+      form.reset();
+      await addTask(newTask);
+    });
+
+    async function supabaseRequest(path = "", options = {}) {
+      const response = await fetch(`${TASKS_ENDPOINT}${path}`, {
+        ...options,
+        headers: {
+          apikey: SUPABASE_KEY,
+          "Content-Type": "application/json",
+          Prefer: "return=representation",
+          ...(options.headers || {})
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      if (response.status === 204) return null;
+      return response.json();
+    }
+
+    async function loadTasks() {
+      try {
+        const cloudTasks = await supabaseRequest(
+          `?household_id=eq.${encodeURIComponent(HOUSEHOLD_ID)}&select=*&order=created_at.desc`
+        );
+        tasks = cloudTasks || [];
+        save();
+      } catch (error) {
+        console.warn("Supabase load failed, using local copy", error);
+      }
+
+      render();
+    }
+
+    async function addTask(newTask) {
+      const optimisticTask = {
+        ...newTask,
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString()
+      };
+
+      tasks.unshift(optimisticTask);
+      save();
+      render();
+
+      try {
+        const inserted = await supabaseRequest("", {
+          method: "POST",
+          body: JSON.stringify(newTask)
+        });
+
+        if (inserted && inserted[0]) {
+          tasks = tasks.map((task) => task.id === optimisticTask.id ? inserted[0] : task);
+          save();
+          render();
+        }
+      } catch (error) {
+        console.warn("Supabase insert failed, keeping local copy", error);
+      }
+    }
+
+    function save() {
+      localStorage.setItem("homeTasks", JSON.stringify(tasks));
+    }
+
+    function todayIso() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function isLate(task) {
+      return Boolean(task.deadline && !task.done && task.deadline < todayIso());
+    }
+
+    function isToday(task) {
+      return Boolean(task.deadline && !task.done && task.deadline === todayIso());
+    }
+
+    function setFilter(value, button) {
+      filter = value;
+      document.querySelectorAll(".filters button").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      render();
+    }
+
+    async function toggleTask(id) {
+      const currentTask = tasks.find((task) => task.id === id);
+      if (!currentTask) return;
+
+      const nextDone = !currentTask.done;
+      tasks = tasks.map((task) => task.id === id ? { ...task, done: nextDone } : task);
+      save();
+      render();
+
+      try {
+        await supabaseRequest(`?id=eq.${encodeURIComponent(id)}&household_id=eq.${encodeURIComponent(HOUSEHOLD_ID)}`, {
+          method: "PATCH",
+          body: JSON.stringify({ done: nextDone })
+        });
+      } catch (error) {
+        console.warn("Supabase update failed", error);
+      }
+    }
+
+    async function deleteTask(id) {
+      const previousTasks = tasks;
+      tasks = tasks.filter((task) => task.id !== id);
+      save();
+      render();
+
+      try {
+        await supabaseRequest(`?id=eq.${encodeURIComponent(id)}&household_id=eq.${encodeURIComponent(HOUSEHOLD_ID)}`, {
+          method: "DELETE"
+        });
+      } catch (error) {
+        tasks = previousTasks;
+        save();
+        render();
+        console.warn("Supabase delete failed", error);
+      }
+    }
+
+    async function clearDone() {
+      const previousTasks = tasks;
+      const doneIds = tasks.filter((task) => task.done).map((task) => task.id);
+      tasks = tasks.filter((task) => !task.done);
+      save();
+      render();
+
+      try {
+        for (const id of doneIds) {
+          await supabaseRequest(`?id=eq.${encodeURIComponent(id)}&household_id=eq.${encodeURIComponent(HOUSEHOLD_ID)}`, {
+            method: "DELETE"
+          });
+        }
+      } catch (error) {
+        tasks = previousTasks;
+        save();
+        render();
+        console.warn("Supabase bulk delete failed", error);
+      }
+    }
+
+    function visibleTasks() {
+      return tasks.filter((task) => {
+        if (filter === "all") return true;
+        if (filter === "late") return isLate(task);
+        return task.owner === filter || task.type === filter;
+      });
+    }
+
+    function priorityClass(priority) {
+      if (priority === "Важно") return "important";
+      if (priority === "Срочно") return "urgent";
+      return "";
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function render() {
+      const shownTasks = visibleTasks();
+
+      document.getElementById("total").textContent = tasks.filter((task) => !task.done).length;
+      document.getElementById("mine").textContent = tasks.filter((task) => !task.done && task.owner === "Я").length;
+      document.getElementById("zhenya").textContent = tasks.filter((task) => !task.done && task.owner === "Женя").length;
+      document.getElementById("overdue").textContent = tasks.filter(isLate).length;
+
+      if (!shownTasks.length) {
+        tasksElement.innerHTML = '<div class="empty">Пока ничего нет. Добавьте первое домашнее дело сверху.</div>';
+        return;
+      }
+
+      tasksElement.innerHTML = shownTasks.map((task) => `
+        <article class="task ${task.done ? "done" : ""}">
+          <input
+            type="checkbox"
+            ${task.done ? "checked" : ""}
+            aria-label="Отметить выполненным"
+            onchange="toggleTask('${task.id}')"
+          />
+          <div>
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            <div class="meta">
+              <span class="pill">${task.type}</span>
+              <span class="pill">Исполнитель: ${task.owner}</span>
+              <span class="pill ${priorityClass(task.priority)}">${task.priority}</span>
+              ${task.deadline ? `<span class="pill ${isLate(task) ? "late" : isToday(task) ? "today" : ""}">До: ${task.deadline}</span>` : ""}
+            </div>
+          </div>
+          <button class="danger" type="button" onclick="deleteTask('${task.id}')">Удалить</button>
+        </article>
+      `).join("");
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>
