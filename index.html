@@ -118,29 +118,6 @@
       line-height: 1.45;
     }
 
-    .label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 28px;
-      margin-bottom: 12px;
-      padding: 5px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.82);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.62);
-      color: #7d5666;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .label-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: var(--coral);
-      box-shadow: 14px 0 0 var(--yellow), 28px 0 0 var(--blue);
-    }
-
     .summary {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -228,7 +205,9 @@
       cursor: pointer;
     }
 
-    .form button {
+    .form button,
+    .danger,
+    .filters button.active {
       background: var(--yellow);
       color: var(--ink);
       box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
@@ -244,22 +223,11 @@
       border: 1px solid rgba(255, 255, 255, 0.72);
     }
 
-    .danger {
-      background: #9a7a84;
-      color: #fff;
-    }
-
     .filters {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 16px;
-    }
-
-    .filters button.active {
-      background: var(--yellow);
-      color: var(--ink);
-      box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
     }
 
     .tasks {
@@ -437,12 +405,14 @@
               <option>Убрать</option>
               <option>Оплатить</option>
             </select>
-            <select id="owner" aria-label="Исполнитель">
-              <option>Я</option>
-              <option>Женя</option>
+            <select id="owner" aria-label="Исполнитель" required>
+              <option value="" disabled selected>Исполнитель</option>
+              <option>Алинка</option>
+              <option>Женька</option>
               <option>Вместе</option>
             </select>
-            <select id="priority" aria-label="Приорите">
+            <select id="priority" aria-label="Приоритет" required>
+              <option value="" disabled selected>Приоритет</option>
               <option>Обычный</option>
               <option>Важно</option>
               <option>Срочно</option>
@@ -454,8 +424,8 @@
 
         <nav class="filters" aria-label="Фильтры">
           <button class="secondary active" type="button" onclick="setFilter('all', this)">Все</button>
-          <button class="secondary" type="button" onclick="setFilter('Я', this)">Алинки</button>
-          <button class="secondary" type="button" onclick="setFilter('Женя', this)">Жени</button>
+          <button class="secondary" type="button" onclick="setFilter('Алинка', this)">Алинки</button>
+          <button class="secondary" type="button" onclick="setFilter('Женька', this)">Жени</button>
           <button class="secondary" type="button" onclick="setFilter('Купить', this)">Покупки</button>
           <button class="secondary" type="button" onclick="setFilter('Починить', this)">Починки</button>
           <button class="secondary" type="button" onclick="setFilter('late', this)">Просроченные</button>
@@ -643,8 +613,14 @@
       return tasks.filter((task) => {
         if (filter === "all") return true;
         if (filter === "late") return isLate(task);
-        return task.owner === filter || task.type === filter;
+        return ownerMatches(task.owner, filter) || task.type === filter;
       });
+    }
+
+    function ownerMatches(owner, selectedOwner) {
+      if (selectedOwner === "Алинка") return owner === "Алинка" || owner === "Я";
+      if (selectedOwner === "Женька") return owner === "Женька" || owner === "Женя";
+      return owner === selectedOwner;
     }
 
     function priorityClass(priority) {
@@ -667,8 +643,8 @@
       const shownTasks = visibleTasks();
 
       document.getElementById("total").textContent = tasks.filter((task) => !task.done).length;
-      document.getElementById("mine").textContent = tasks.filter((task) => !task.done && task.owner === "Я").length;
-      document.getElementById("zhenya").textContent = tasks.filter((task) => !task.done && task.owner === "Женя").length;
+      document.getElementById("mine").textContent = tasks.filter((task) => !task.done && ownerMatches(task.owner, "Алинка")).length;
+      document.getElementById("zhenya").textContent = tasks.filter((task) => !task.done && ownerMatches(task.owner, "Женька")).length;
       document.getElementById("overdue").textContent = tasks.filter(isLate).length;
 
       if (!shownTasks.length) {
