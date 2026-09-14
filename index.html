@@ -1,3 +1,6 @@
+Вот актуальный код целиком. Скопируй всё из блока ниже и вставь в GitHub `index.html` вместо старого.
+
+```html
 <!doctype html>
 <html lang="ru">
 <head>
@@ -205,9 +208,7 @@
       cursor: pointer;
     }
 
-    .form button,
-    .danger,
-    .filters button.active {
+    .form button {
       background: var(--yellow);
       color: var(--ink);
       box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
@@ -223,11 +224,24 @@
       border: 1px solid rgba(255, 255, 255, 0.72);
     }
 
+    .danger {
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
+    }
+
     .filters {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 16px;
+    }
+
+    .filters button.active,
+    .hide-done-toggle.active {
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
     }
 
     .tasks {
@@ -384,7 +398,9 @@
             <h1>Домашние заботы Женьки и Алинки</h1>
             <div class="subtitle">Мини-приложение для планирования домашних забот: покупки, дела по дому и тд</div>
           </div>
-          <button class="secondary" type="button" onclick="clearDone()">Убрать выполненные</button>
+          <button class="secondary hide-done-toggle active" id="hide-done-toggle" type="button" onclick="toggleHideDone()">
+            Скрывать выполненные
+          </button>
         </header>
 
         <section class="summary" aria-label="Сводка">
@@ -429,6 +445,7 @@
           <button class="secondary" type="button" onclick="setFilter('Купить', this)">Покупки</button>
           <button class="secondary" type="button" onclick="setFilter('Починить', this)">Починки</button>
           <button class="secondary" type="button" onclick="setFilter('late', this)">Просроченные</button>
+          <button class="secondary" type="button" onclick="setFilter('done', this)">Выполненные</button>
         </nav>
 
         <section class="tasks" id="tasks" aria-live="polite"></section>
@@ -444,9 +461,11 @@
 
     let tasks = JSON.parse(localStorage.getItem("homeTasks") || "[]");
     let filter = "all";
+    let hideDoneFromLists = JSON.parse(localStorage.getItem("homeTasksHideDone") || "true");
 
     const form = document.getElementById("task-form");
     const tasksElement = document.getElementById("tasks");
+    const hideDoneToggle = document.getElementById("hide-done-toggle");
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -473,6 +492,7 @@
         ...options,
         headers: {
           apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
           "Content-Type": "application/json",
           Prefer: "return=representation",
           ...(options.headers || {})
@@ -530,6 +550,13 @@
 
     function save() {
       localStorage.setItem("homeTasks", JSON.stringify(tasks));
+      localStorage.setItem("homeTasksHideDone", JSON.stringify(hideDoneFromLists));
+    }
+
+    async function deleteTaskFromCloud(id) {
+      await supabaseRequest(`?id=eq.${encodeURIComponent(id)}&household_id=eq.${encodeURIComponent(HOUSEHOLD_ID)}`, {
+        method: "DELETE"
+      });
     }
 
     function todayIso() {
@@ -548,6 +575,12 @@
       filter = value;
       document.querySelectorAll(".filters button").forEach((item) => item.classList.remove("active"));
       button.classList.add("active");
+      render();
+    }
+
+    function toggleHideDone() {
+      hideDoneFromLists = !hideDoneFromLists;
+      save();
       render();
     }
 
@@ -571,46 +604,21 @@
     }
 
     async function deleteTask(id) {
-      const previousTasks = tasks;
       tasks = tasks.filter((task) => task.id !== id);
       save();
       render();
 
       try {
-        await supabaseRequest(`?id=eq.${encodeURIComponent(id)}&household_id=eq.${encodeURIComponent(HOUSEHOLD_ID)}`, {
-          method: "DELETE"
-        });
+        await deleteTaskFromCloud(id);
       } catch (error) {
-        tasks = previousTasks;
-        save();
-        render();
         console.warn("Supabase delete failed", error);
-      }
-    }
-
-    async function clearDone() {
-      const previousTasks = tasks;
-      const doneIds = tasks.filter((task) => task.done).map((task) => task.id);
-      tasks = tasks.filter((task) => !task.done);
-      save();
-      render();
-
-      try {
-        for (const id of doneIds) {
-          await supabaseRequest(`?id=eq.${encodeURIComponent(id)}&household_id=eq.${encodeURIComponent(HOUSEHOLD_ID)}`, {
-            method: "DELETE"
-          });
-        }
-      } catch (error) {
-        tasks = previousTasks;
-        save();
-        render();
-        console.warn("Supabase bulk delete failed", error);
       }
     }
 
     function visibleTasks() {
       return tasks.filter((task) => {
+        if (filter === "done") return task.done;
+        if (hideDoneFromLists && task.done) return false;
         if (filter === "all") return true;
         if (filter === "late") return isLate(task);
         return ownerMatches(task.owner, filter) || task.type === filter;
@@ -641,6 +649,8 @@
 
     function render() {
       const shownTasks = visibleTasks();
+      hideDoneToggle.classList.toggle("active", hideDoneFromLists);
+      hideDoneToggle.textContent = hideDoneFromLists ? "Скрывать выполненные" : "Показывать выполненные";
 
       document.getElementById("total").textContent = tasks.filter((task) => !task.done).length;
       document.getElementById("mine").textContent = tasks.filter((task) => !task.done && ownerMatches(task.owner, "Алинка")).length;
@@ -648,7 +658,9 @@
       document.getElementById("overdue").textContent = tasks.filter(isLate).length;
 
       if (!shownTasks.length) {
-        tasksElement.innerHTML = '<div class="empty">Пока ничего нет. Добавьте первое домашнее дело сверху.</div>';
+        tasksElement.innerHTML = filter === "done"
+          ? '<div class="empty">Выполненных задач пока нет.</div>'
+          : '<div class="empty">Пока ничего нет. Добавьте первое домашнее дело сверху.</div>';
         return;
       }
 
@@ -678,3 +690,4 @@
   </script>
 </body>
 </html>
+```
