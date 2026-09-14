@@ -118,6 +118,29 @@
       line-height: 1.45;
     }
 
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.82);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.62);
+      color: #7d5666;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .label-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--coral);
+      box-shadow: 14px 0 0 var(--yellow), 28px 0 0 var(--blue);
+    }
+
     .summary {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -234,7 +257,12 @@
       margin-bottom: 16px;
     }
 
-    .filters button.active,
+    .filters button.active {
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: 0 10px 24px rgba(236, 186, 49, 0.24);
+    }
+
     .hide-done-toggle.active {
       background: var(--yellow);
       color: var(--ink);
@@ -404,7 +432,7 @@
           <div class="stat">Всего открыто<strong id="total">0</strong></div>
           <div class="stat">Алинкины задачи<strong id="mine">0</strong></div>
           <div class="stat">Женькины задачи<strong id="zhenya">0</strong></div>
-          <div class="stat">Просрочено<strong id="overdue">0</strong></div>
+          <div class="stat">Выполнено<strong id="done-count">0</strong></div>
         </section>
 
         <section class="panel">
@@ -430,7 +458,6 @@
               <option>Важно</option>
               <option>Срочно</option>
             </select>
-            <input id="deadline" type="date" aria-label="Дедлайн" />
             <button type="submit">Добавить</button>
           </form>
         </section>
@@ -441,7 +468,6 @@
           <button class="secondary" type="button" onclick="setFilter('Женька', this)">Жени</button>
           <button class="secondary" type="button" onclick="setFilter('Купить', this)">Покупки</button>
           <button class="secondary" type="button" onclick="setFilter('Починить', this)">Починки</button>
-          <button class="secondary" type="button" onclick="setFilter('late', this)">Просроченные</button>
           <button class="secondary" type="button" onclick="setFilter('done', this)">Выполненные</button>
         </nav>
 
@@ -476,7 +502,6 @@
         type: document.getElementById("type").value,
         owner: document.getElementById("owner").value,
         priority: document.getElementById("priority").value,
-        deadline: document.getElementById("deadline").value || null,
         done: false
       };
 
@@ -556,18 +581,6 @@
       });
     }
 
-    function todayIso() {
-      return new Date().toISOString().slice(0, 10);
-    }
-
-    function isLate(task) {
-      return Boolean(task.deadline && !task.done && task.deadline < todayIso());
-    }
-
-    function isToday(task) {
-      return Boolean(task.deadline && !task.done && task.deadline === todayIso());
-    }
-
     function setFilter(value, button) {
       filter = value;
       document.querySelectorAll(".filters button").forEach((item) => item.classList.remove("active"));
@@ -617,7 +630,6 @@
         if (filter === "done") return task.done;
         if (hideDoneFromLists && task.done) return false;
         if (filter === "all") return true;
-        if (filter === "late") return isLate(task);
         return ownerMatches(task.owner, filter) || task.type === filter;
       });
     }
@@ -652,7 +664,7 @@
       document.getElementById("total").textContent = tasks.filter((task) => !task.done).length;
       document.getElementById("mine").textContent = tasks.filter((task) => !task.done && ownerMatches(task.owner, "Алинка")).length;
       document.getElementById("zhenya").textContent = tasks.filter((task) => !task.done && ownerMatches(task.owner, "Женька")).length;
-      document.getElementById("overdue").textContent = tasks.filter(isLate).length;
+      document.getElementById("done-count").textContent = tasks.filter((task) => task.done).length;
 
       if (!shownTasks.length) {
         tasksElement.innerHTML = filter === "done"
@@ -675,7 +687,6 @@
               <span class="pill">${task.type}</span>
               <span class="pill">Исполнитель: ${task.owner}</span>
               <span class="pill ${priorityClass(task.priority)}">${task.priority}</span>
-              ${task.deadline ? `<span class="pill ${isLate(task) ? "late" : isToday(task) ? "today" : ""}">До: ${task.deadline}</span>` : ""}
             </div>
           </div>
           <button class="danger" type="button" onclick="deleteTask('${task.id}')">Удалить</button>
